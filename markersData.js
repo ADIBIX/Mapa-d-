@@ -14,7 +14,7 @@ var markersData = [
     { id: 'd 5', lat: 4386.38, lng: 5407.63, title: 'D? Dinuś', imageUrl: '', countAs: 1 },
     { id: 'd 5', lat: 3654.25, lng: 5569.75, title: 'D? Elektrownia', imageUrl: '', countAs: 1 },
     { id: 'd 5', lat: 5712.00, lng: 5672.88, title: 'D? Wagon', imageUrl: '', countAs: 1 },
-    { id: 'd 5', lat: 6813.38, lng: 3793.53, title: 'D? Wagon', imageUrl: '', countAs: 1 }, 
+    { id: 'd 5', lat: 6813.38, lng: 3793.53, title: 'D? Paleto', imageUrl: '', countAs: 1 }, 
     { id: 'd 7', lat: 2077.11, lng: 3447.08, title: 'D? Budowa', imageUrl: '', countAs: 1 },
     { id: 'd 8', lat: 5074.50, lng: 3602.00, title: 'D? Silosy', imageUrl: '', countAs: 1 },
 ]; 
