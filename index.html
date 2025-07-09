@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poszukiwanie Mumii FiveLife</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        /* Styl podstawowy */
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        #map { width: 100%; height: 100vh; }
+    
+        /* Styl dla kontenerów */
+        #button-container, #coordinates, #counter, .footer-info, #changelog-container {
+            position: absolute; background: rgba(255, 255, 255, 0.8); padding: 10px; border-radius: 5px; z-index: 1000;
+        }
+        #button-container { top: 10px; left: 50px; }
+        #coordinates { top: 50px; left: 50px; }
+        #counter { top: 100px; left: 10px; }
+        .footer-info { bottom: 10px; right: 10px; font-size: 0.8em; text-align: right; }
+        #changelog-container { top: 10px; right: 10px; }
+    
+        /* Styl dla changeloga */
+        #changelog {
+            display: none;
+            background: #ffffff;
+            padding: 20px;
+            border: 1px solid #ffffff;
+            border-radius: 8px;
+            max-width: 500px;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: 0px 4px 12px rgba(239, 0, 0, 0.1);
+            font-size: 14px;
+            color: #000000;
+        }
+    
+        /* Styl dla modalnego okna powitalnego */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #888;
+            cursor: pointer;
+        }
+
+        .modal h2 {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .modal p {
+            font-size: 1em;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        /* Styl dla nagłówka changeloga */
+        #changelog h3 {
+            font-size: 1.4em;
+            color: #333;
+            margin-top: 6;
+            padding-bottom: 1px;
+            border-bottom: 2px solid #000000;
+        }
+
+        /* Styl sekcji wersji */
+        .changelog-version {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f5f8fa;
+            border-left: 4px solid #000000;
+            border-radius: 5px;
+        }
+
+        /* Styl dla listy zmian */
+        .changelog-version ul {
+            padding-left: 20px;
+            margin: 10px 0;
+            list-style: none;
+        }
+
+        /* Styl dla elementów listy */
+        .changelog-version ul li {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Ikony dla listy */
+        .changelog-icon {
+            font-size: 1.2em;
+            margin-right: 8px;
+            color: #333;
+        }
+
+        .changelog-text {
+            font-size: 0.95em;
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeModal()">&times;</span>
+        <h2>Poszukiwanie Mumii 2024 dobiegło końca!</h2>
+        <p>Wielkie dzięki wszystkim, którzy dołożyli swą cegiełkę w stworzeniu tej mapy. Ogromne podziękowania dla osób, które przesyłały swoje screenshoty z oznaczonymi miejscami danych mumii, zarówno na serwerze organizacji <b>DE</b>, jak i na priv.</p>
+        <p>Choć nie udało się umieścić na mapie wszystkich mumii, cieszę się, że ta inicjatywa pomogła wielu osobom, zwłaszcza tym, którzy nie mieli czasu na samodzielne poszukiwania, a także tym, którym brakowało kilku mumii do skompletowania swoich wymarzonych pojazdów.</p>
+        <p>Jeszcze raz dziękuje wszystkim za zaangażowanie w ten projekt! W przyszłości mam w planach kontynuować tę inicjatywę, wprowadzić nowe funkcje, a także dodać do mapy elementy, które sprawią, że będzie jeszcze bardziej przejrzysta.</p>
+        <p><strong>Do zobaczenia wkrótce! :b</strong></p>
+    </div>
+</div>
+
+<div id="button-container">
+    <button onclick="changeMap('Mapa_Gra.png')">Mapa 1</button>
+    <button onclick="changeMap('Mapa.png')">Mapa 2</button>
+    <button onclick="changeMap('MapaRoadMap.webp')">Mapa 3</button>
+    <button onclick="changeMap('MapaSatelita.jpg')">Mapa 4</button>
+</div>
+
+<div id="coordinates">Współrzędne: <span id="coordsDisplay">brak</span></div>
+<div id="counter">Znalezione Mumie: <span id="markedCount">0</span> / <span id="totalCount">0</span></div>
+<div id="map"></div>
+
+<div class="footer-info">
+    Twórca: <strong>ADIBIX</strong><br>
+    Ostatnia modyfikacja: <span id="lastModified">11.11.2024 18:14</span>
+</div>
+
+<div id="changelog-container">
+    <button onclick="toggleChangelog()">Changelog</button>
+    <div id="changelog">
+        <pre id="changelogContent">Ładowanie changelog...</pre>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="markersData.js"></script>
+<script>
+    window.onload = function() {
+        openModal();
+    };
+
+    function openModal() {
+        document.getElementById("modal").style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById("modal").style.display = "none";
+    }
+
+    var bounds = [[0, 0], [8192, 8192]];
+    var map = L.map('map', {
+        crs: L.CRS.Simple,
+        minZoom: -3,
+        maxZoom: 5,
+        maxBounds: bounds,
+        maxBoundsViscosity: 1
+    });
+
+    var imageUrl = 'Mapa_Gra.png'; 
+    var imageLayer = L.imageOverlay(imageUrl, bounds).addTo(map);
+    map.fitBounds(bounds);
+
+    var totalCount = markersData.reduce((count, marker) => count + (marker.countAs || 1), 0);
+    var markedCount = 0;
+    var markers = {};
+
+    function addMarker(markerData) {
+        var visited = localStorage.getItem(markerData.id) === 'true';
+        var iconUrl = visited ? 'Pinezka.png' : 'Pinezka2.png';
+
+        var marker = L.marker([markerData.lat, markerData.lng], {
+            icon: L.icon({
+                iconUrl: iconUrl,
+                iconSize: [50, 50],
+                iconAnchor: [15, 50],
+                popupAnchor: [0, -40],
+            })
+        }).addTo(map);
+
+        markers[markerData.id] = marker;
+        updatePopupContent(marker, markerData);
+
+        marker.on('popupopen', function() {
+            document.getElementById(`${markerData.id}-toggle`).onclick = function() {
+                toggleVisited(markerData.id);
+            };
+        });
+    }
+
+    function updatePopupContent(marker, markerData) {
+        var visited = localStorage.getItem(markerData.id) === 'true';
+        var statusText = visited ? ' (Znaleziona)' : '';
+        var buttonText = visited ? 'Odznacz' : 'Zaznacz jako znalezione';
+
+        marker.bindPopup(
+            `${markerData.title}${statusText}<br>
+            <a href="${markerData.imageUrl}" target="_blank">
+                <img src="${markerData.imageUrl}" alt="${markerData.title}" style="width:100px; height:auto;">
+            </a><br>
+            <button id="${markerData.id}-toggle">${buttonText}</button>`
+        );
+    }
+
+    function toggleVisited(id) {
+        var visited = localStorage.getItem(id) === 'true';
+        localStorage.setItem(id, !visited);
+
+        var marker = markers[id];
+        var newIconUrl = !visited ? 'Pinezka.png' : 'Pinezka2.png';
+        marker.setIcon(L.icon({
+            iconUrl: newIconUrl,
+            iconSize: [50, 50],
+            iconAnchor: [15, 50],
+            popupAnchor: [0, -40],
+        }));
+
+        var markerData = markersData.find(marker => marker.id === id);
+        updatePopupContent(marker, markerData);
+
+        updateCounter();
+    }
+
+    function updateCounter() {
+        markedCount = markersData.reduce((count, markerData) => {
+            var isVisited = localStorage.getItem(markerData.id) === 'true';
+            var countAs = markerData.countAs || 1;
+            return count + (isVisited ? countAs : 0);
+        }, 0);
+        
+        document.getElementById('markedCount').innerText = markedCount;
+        document.getElementById('totalCount').innerText = totalCount;
+    }
+
+    markersData.forEach(addMarker);
+    updateCounter();
+
+    function changeMap(mapName) {
+        imageLayer.setUrl(mapName);
+    }
+
+    map.on('click', function(e) {
+        var clickedLat = e.latlng.lat;
+        var clickedLng = e.latlng.lng;
+        document.getElementById('coordsDisplay').innerText = `(${clickedLat.toFixed(2)}, ${clickedLng.toFixed(2)})`;
+    });
+
+    function toggleChangelog() {
+    var changelog = document.getElementById("changelog");
+    if (changelog.style.display === "none") {
+        fetch("CHANGELOG.md")
+            .then(response => response.text())
+            .then(text => {
+                document.getElementById("changelogContent").innerHTML = marked.parse(text);
+            })
+            .catch(error => document.getElementById("changelogContent").innerText = "Błąd ładowania changeloga.");
+        changelog.style.display = "block";
+    } else {
+        changelog.style.display = "none";
+    }}
+</script>
+
+</body>
+</html>
+
+
