@@ -5,14 +5,16 @@ var markersData = [
     { id: 'd 3', lat: 1511.56, lng: 3334.06, title: 'D? Złom', imageUrl: 'Złomiarz.png', countAs: 1 },
     { id: 'd 4', lat: 3791.63, lng: 4756.75, title: 'D? Szopa', imageUrl: 'Szopa.png', countAs: 1 },
     { id: 'd 5', lat: 1857.63, lng: 4218.38, title: 'D? tania lakiernia-skatepark', imageUrl: '', countAs: 1 },
-    { id: 'd 6', lat: 697.50, lng: 4572.75, title: 'D? Statek', imageUrl: '', countAs: 1 },
-
-
-
-    
-    //Zrobione przez R3vii
+    { id: 'd 5', lat: 697.50, lng: 4572.75, title: 'D? Statek', imageUrl: '', countAs: 1 },
+    { id: 'd 5', lat: 1523.00, lng: 4802.50, title: 'D? Rafineria', imageUrl: '', countAs: 1 },
+    { id: 'd 5', lat: 2489.50, lng: 3607.50, title: 'D? Plaza', imageUrl: '', countAs: 1 },
+    { id: 'd 5', lat: 2925.25, lng: 3706.50, title: 'D? Machcin', imageUrl: '', countAs: 1 },
+    { id: 'd 5', lat: 4409.37, lng: 4430.28, title: 'D? Hamownia', imageUrl: '', countAs: 1 },
+    { id: 'd 5', lat: 4713.94, lng: 5301.56, title: 'D? Sandy Szrot', imageUrl: '', countAs: 1 },
+    { id: 'd 5', lat: 4386.38, lng: 5407.63, title: 'D? Dinuś', imageUrl: '', countAs: 1 },
+    { id: 'd 5', lat: 3654.25, lng: 5569.75, title: 'D? Elektrownia', imageUrl: '', countAs: 1 },
+    { id: 'd 5', lat: 5712.00, lng: 5672.88, title: 'D? Wagon', imageUrl: '', countAs: 1 },
+    { id: 'd 5', lat: 6813.38, lng: 3793.53, title: 'D? Wagon', imageUrl: '', countAs: 1 }, 
     { id: 'd 7', lat: 2077.11, lng: 3447.08, title: 'D? Budowa', imageUrl: '', countAs: 1 },
     { id: 'd 8', lat: 5074.50, lng: 3602.00, title: 'D? Silosy', imageUrl: '', countAs: 1 },
-
-    
 ]; 
